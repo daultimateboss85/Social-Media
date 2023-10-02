@@ -1,10 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, Post, Follow, Likes
 
 
 def index(request):
@@ -61,3 +61,29 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+
+def posts(request,batch):
+    #get all posts
+    posts = Post.objects.all().order_by("-time")
+
+    #make sure batch is in range
+    if batch < 0:
+        batch = 0
+    
+    max_batch = len(posts) // 10
+
+    if batch * 10 > max_batch:
+        batch = max_batch
+
+    #implementing pagination by selecting batch of posts and displaying those in the batch
+    return JsonResponse([post.serialize() for post in posts[batch*10:batch+10]], safe=False)
+
+def bposts(requests,anyother):
+    """takes care of bad post arguments"""
+    return HttpResponseRedirect(reverse("posts",args=[0]))
+
+def max_batch(requests, postgroup):
+    """Returns max batch for a given postgroup #api route"""
+    if postgroup == "all":
+        return JsonResponse({"count":Post.objects.count() // 10}, safe=False)

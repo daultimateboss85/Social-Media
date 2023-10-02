@@ -2,4 +2,17 @@
 
 {% block body %}
     
+
+    <!--DIV THAT DISPLAYS USER INFO-->
+    <div id="user-info">{{user.username}}</div>
+
+
+    <!--DIV THAT HOLDS POSTS-->
+    <div id="postscontainer"></div>
+    
+    <input type="hidden" id="batch" value=0>
+    <button id="prev">Previous</button>
+    <button id="next">Next</button>
+    
+   
 {% endblock %}

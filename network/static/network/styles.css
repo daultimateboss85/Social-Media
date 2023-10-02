@@ -1,0 +1,46 @@
+body{
+    padding: 10px;
+}
+
+*{
+    box-sizing: border-box;
+}
+
+.postarea{
+    
+    margin: 2px 0;
+    background-color: #eeeeee;
+    
+}
+    
+.user{
+    float: left;
+    width: 50%;
+    text-align:left;
+    font-size: 13px;
+    
+}
+
+.posttime{
+    float: right;
+    
+    width: 50%;
+    text-align:right;
+    font-size: 13px;
+}
+
+.page{
+    padding: 10px;
+}
+
+#postscontainer{
+    min-height: 30rem;
+}
+
+.fright{
+    float:right;
+}
+
+.ib{
+    display: inline-block !important;
+}

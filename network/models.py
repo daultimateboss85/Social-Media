@@ -18,6 +18,12 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.text} by {self.user}"
+    
+    def serialize(self):
+        
+        return {"user": self.user.username,
+                "time": self.time.strftime("%b %d %Y, %I:%M %p"),
+                "text": self.text}
 
 class Likes(models.Model):
     post = models.ForeignKey(Post,on_delete=models.CASCADE)
