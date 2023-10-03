@@ -77,13 +77,29 @@ def posts(request,batch):
         batch = max_batch
 
     #implementing pagination by selecting batch of posts and displaying those in the batch
-    return JsonResponse([post.serialize() for post in posts[batch*10:batch+10]], safe=False)
+    return JsonResponse([post.serialize() for post in posts[batch*10:batch*10+10]], safe=False)
 
-def bposts(requests,anyother):
+def bposts(request,anyother):
     """takes care of bad post arguments"""
     return HttpResponseRedirect(reverse("posts",args=[0]))
 
-def max_batch(requests, postgroup):
+def max_batch(request, postgroup):
     """Returns max batch for a given postgroup #api route"""
     if postgroup == "all":
         return JsonResponse({"count":Post.objects.count() // 10}, safe=False)
+    
+def userdata(request, id):
+    """Returns data about user with id id"""
+    
+    try:
+        user = User.objects.get(pk=id) 
+    except:
+        return JsonResponse({"error":"invalid user"}, status=400)
+    
+    #get followers and following
+    followers = Follow.objects.filter(followed=user).count()
+    followed = Follow.objects.filter(follower=user).count()
+
+
+    return JsonResponse({"username":user.username,"followers":followers,"followed":followed})
+

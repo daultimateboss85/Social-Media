@@ -4,23 +4,20 @@ document.addEventListener("DOMContentLoaded",function(){
     //next button -------------------------
     document.querySelector("#next").onclick = () => 
     {//if batch > max_batch set it back to max_batch
-    //{
-      //  document.querySelector("#batch").value = max_batch-1;
- 
-    fetch("/max_batch/all")
-    .then(response => response.json())
-    .then(data=>{
-        let max_batch = data["count"];
-        if (parseInt(document.querySelector("#batch").value ) >= max_batch){
-            gposts(batch=max_batch)
-            document.querySelector("#batch").value = max_batch ;
-           ;
-        }
-        else{
-            
-        gposts(batch=parseInt(document.querySelector("#batch").value)+1);
-        document.querySelector("#batch").value = parseInt(document.querySelector("#batch").value)+1;}
-    })
+        fetch("/max_batch/all")
+        .then(response => response.json())
+        .then(data=>{
+            let max_batch = data["count"];
+            if (parseInt(document.querySelector("#batch").value ) >= max_batch){
+                gposts(batch=max_batch)
+                document.querySelector("#batch").value = max_batch ;
+            ;
+            }
+            else{
+                
+            gposts(batch=parseInt(document.querySelector("#batch").value)+1);
+            document.querySelector("#batch").value = parseInt(document.querySelector("#batch").value)+1;}
+        })
     }
 
 
@@ -30,18 +27,19 @@ document.addEventListener("DOMContentLoaded",function(){
     //previous button -------------------
     document.querySelector("#prev").onclick = () => 
     {
-    //if batch is less than 0 put it to 1 
-    if (parseInt(document.querySelector("#batch").value) < 0){
-        document.querySelector("#batch").value = 1;
-    }
-    gposts(batch=parseInt(document.querySelector("#batch").value)-1);
-    if (parseInt(document.querySelector("#batch").value) == 0){
-        document.querySelector("#batch").value = 0;
-    }
-    else{document.querySelector("#batch").value = parseInt(document.querySelector("#batch").value)-1;}
+        //if batch is less than 0 put it to 1 
+        if (parseInt(document.querySelector("#batch").value) < 0){
+            document.querySelector("#batch").value = 1;
+        }
+        gposts(batch=parseInt(document.querySelector("#batch").value)-1);
+        if (parseInt(document.querySelector("#batch").value) == 0){
+            document.querySelector("#batch").value = 0;
+        }
+        else{document.querySelector("#batch").value = parseInt(document.querySelector("#batch").value)-1;}
     }
 
 })
+
 
 function gposts(batch=0){
     //function to get all posts

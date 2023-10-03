@@ -5,8 +5,8 @@ class User(AbstractUser):
     pass
 
 class Follow(models.Model):
-    follower = models.OneToOneField(User,on_delete=models.CASCADE, related_name="follower")
-    followed = models.OneToOneField(User, on_delete=models.CASCADE, related_name="followed")
+    follower = models.ForeignKey(User,on_delete=models.CASCADE, related_name="follower")
+    followed = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followed")
 
     def __str__(self):
         return f"{self.follower} follows {self.followed}"
