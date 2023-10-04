@@ -1,5 +1,6 @@
 body{
     padding: 10px;
+   
 }
 
 *{
@@ -9,8 +10,11 @@ body{
 .postarea{
     
     margin: 2px 0;
-    background-color: #eeeeee;
-    
+    background-color: #eeeeee0f;
+    border: 2px solid grey;
+    width: 50%;
+    border-radius: 5px;
+    padding: 5px;
 }
     
 .user{
@@ -18,12 +22,13 @@ body{
     width: 50%;
     text-align:left;
     font-size: 13px;
+    background-color: #dddddd;
     
 }
 
 .posttime{
     float: right;
-    
+    background-color:#dddddd;
     width: 50%;
     text-align:right;
     font-size: 13px;
@@ -34,7 +39,12 @@ body{
 }
 
 #postscontainer{
+    display: flex;
+
     min-height: 30rem;
+    flex-direction: column;
+    align-items: center;
+
 }
 
 .fright{
@@ -44,3 +54,25 @@ body{
 .ib{
     display: inline-block !important;
 }
+
+.heart-button{
+    border-style: none;
+    padding-left: 0;
+    color: grey;
+    background-color: #eeeeee0f;
+}
+
+.heart{
+    color:red;
+}
+
+.material-symbols-outlined{
+    background-color: #eeeeee0f;
+}
+
+/* #subbody{
+    min-width: 100%;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+} */

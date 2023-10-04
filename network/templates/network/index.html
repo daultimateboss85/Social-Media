@@ -8,11 +8,18 @@
 
 
     <!--DIV THAT HOLDS POSTS-->
-    <div id="postscontainer"></div>
+    <div id="subbody"> 
+        <div id="postscontainer"></div>
+        <div >
+            <input type="hidden" id="batch" value=0>
+            <button id="prev" class = "btn btn-outline-secondary">Previous</button>
+            <button id="next" class = "btn btn-outline-secondary">Next</button>
+        </div>
+        
+    </div>
+   
     
-    <input type="hidden" id="batch" value=0>
-    <button id="prev">Previous</button>
-    <button id="next">Next</button>
+
     
    
 {% endblock %}
