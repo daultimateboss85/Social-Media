@@ -103,3 +103,54 @@ def userdata(request, id):
 
     return JsonResponse({"username":user.username,"followers":followers,"followed":followed})
 
+def catposts(request, category, id, batch):
+    """Returns batch of specified category of posts"""
+
+    #if posts for a specific user
+    if category == "user":
+        posts = Post.objects.filter(user__id=id).order_by("-time")
+    
+    #if posts for a feed 
+    elif category == "feed":
+        followed = Follow.objects.filter(follower__id=id)
+        posts = Post.objects.filter(user__id__in=[person.followed.id for person in followed]).order_by("-time")
+
+    return JsonResponse([post.serialize() for post in posts[batch*10 : batch*10 + 10]], safe=False)
+
+def likes(request, post_id, user, action):
+    """Like a post"""
+    #if user triggers like then create like with post being the post liked and user user that liked
+    try:
+        to_like = Post.objects.get(pk=post_id)
+        user = User.objects.get(pk=user)
+
+    except:
+        return JsonResponse({"error":"Invalid request"}, safe=False)
+    #like a post
+    if action == "like":
+        try:
+            already_liked = Likes.objects.get(user=user, post=to_like)
+            
+            return JsonResponse({"liked":"true"}, safe=False)
+        except:
+            like = Likes(user=user, post=to_like)
+            like.save()
+            return JsonResponse({"liked":"true"},safe=False)
+
+    #dislike a post
+    elif action =="dislike":
+        try:
+            liked = Likes.objects.get(user=user, post=to_like)
+            liked.delete()
+            return JsonResponse({"liked":"false"},safe=False)
+        except:
+            return JsonResponse({"error":"no can do"}, safe=False)
+        
+    elif action == "check":
+        try:
+            liked = Likes.objects.get(user=user, post=to_like)
+            return JsonResponse({"liked":"true"}, safe=False)
+        except:
+            return JsonResponse({"liked":"false"},safe=False)
+
+    return JsonResponse({"error":"bad request"},safe=False)

@@ -13,10 +13,12 @@ urlpatterns = [
     #API routes
     #api should be able to get all posts
     path("posts/<int:batch>", views.posts, name="posts"),
-    path("posts/<str:category>/<int:batch>/<int:id>", views.bposts, name="bposts"), #takes care of requesting for wrong post batch
+    path("posts/<str:anyother>", views.bposts, name="bposts"), #takes care of requesting for wrong post batch
+    
+    path("posts/<str:category>/<int:id>/<int:batch>", views.catposts, name="catposts"), #takes care of requesting for wrong post batch
     path("max_batch/<str:postgroup>", views.max_batch, name="maxbatch"), #get max batch of posts
    
-    path("userdata/<int:id>", views.userdata, name="userdata") #getting user data ie follows, followers, name
-    
+    path("userdata/<int:id>", views.userdata, name="userdata"), #getting user data ie follows, followers, name
+    path("<int:post_id>/<int:user>/<str:action>", views.likes, name="likes") #liking, disliking and checking for likes on posts
     
     ]

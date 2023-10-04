@@ -21,13 +21,14 @@ class Post(models.Model):
     
     def serialize(self):
         
-        return {"user": self.user.username,
+        return {"id":self.id,
+                "user": self.user.username,
                 "time": self.time.strftime("%b %d %Y, %I:%M %p"),
                 "text": self.text}
 
 class Likes(models.Model):
-    post = models.ForeignKey(Post,on_delete=models.CASCADE)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.user} likes {self.post}"
