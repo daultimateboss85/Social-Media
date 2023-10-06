@@ -75,7 +75,7 @@ def posts(request,batch):
     
     max_batch = len(posts) // 10
 
-    if batch * 10 > max_batch:
+    if batch > max_batch:
         batch = max_batch
 
     #implementing pagination by selecting batch of posts and displaying those in the batch

@@ -27,19 +27,20 @@ document.addEventListener("DOMContentLoaded",function(){
         
     }
     //next button -------------------------
-    document.querySelector("#next").onclick = () => 
+    document.querySelector("#next").onclick = () =>     
+
     {//if batch > max_batch set it back to max_batch
         fetch("/max_batch/all")
         .then(response => response.json())
         .then(data=>{
             let max_batch = data["count"];
+            console.log(max_batch)
             if (parseInt(document.querySelector("#batch").value ) >= max_batch){
-                gposts(batch=max_batch)
+                gposts(batch=max_batch);
                 document.querySelector("#batch").value = max_batch ;
             ;
             }
             else{
-                
             gposts(batch=parseInt(document.querySelector("#batch").value)+1);
             document.querySelector("#batch").value = parseInt(document.querySelector("#batch").value)+1;}
         })
@@ -69,7 +70,7 @@ function gposts(batch=0){
     .then(response => response.json())
     .then(text=>{
         dis_p(text);
-        console.log(text);
+        console.log(batch);
     })
 }
 
