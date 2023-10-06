@@ -38,13 +38,15 @@ body{
     padding: 10px;
 }
 
-#postscontainer{
+#posts-div{
     display: flex;
-
-    min-height: 30rem;
     flex-direction: column;
     align-items: center;
+}
 
+#postscontainer{
+    display: flex;
+    flex-direction: column;
 }
 
 .fright{

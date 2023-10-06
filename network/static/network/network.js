@@ -23,61 +23,31 @@ document.addEventListener("DOMContentLoaded",function(){
             gposts();
             document.querySelector("#postdata").value = ""})
         .catch(error => console.log(error))
-        
-        
     }
-    //next button -------------------------
-    document.querySelector("#next").onclick = () =>     
-
-    {//if batch > max_batch set it back to max_batch
-        fetch("/max_batch/all")
-        .then(response => response.json())
-        .then(data=>{
-            let max_batch = data["count"];
-            console.log(max_batch)
-            if (parseInt(document.querySelector("#batch").value ) >= max_batch){
-                gposts(batch=max_batch);
-                document.querySelector("#batch").value = max_batch ;
-            ;
-            }
-            else{
-            gposts(batch=parseInt(document.querySelector("#batch").value)+1);
-            document.querySelector("#batch").value = parseInt(document.querySelector("#batch").value)+1;}
-        })
-
-    }
-
-    //previous button -------------------
-    document.querySelector("#prev").onclick = () => 
-    {
-        //if batch is less than 0 put it to 1 
-        if (parseInt(document.querySelector("#batch").value) < 0){
-            document.querySelector("#batch").value = 1;
-        }
-        gposts(batch=parseInt(document.querySelector("#batch").value)-1);
-        if (parseInt(document.querySelector("#batch").value) == 0){
-            document.querySelector("#batch").value = 0;
-        }
-        else{document.querySelector("#batch").value = parseInt(document.querySelector("#batch").value)-1;}
-    }
-
 })
 
-
-function gposts(batch=0){
+//function to get posts 
+function gposts(path="/posts",batch=0){
     //function to get all posts
-    fetch(`/posts/${batch}`)
+    fetch(`${path}/${batch}`)
     .then(response => response.json())
     .then(text=>{
-        dis_p(text);
-        console.log(batch);
+        dis_p(path = `${path}`,batch= text["batch"],text["posts"]);
     })
 }
 
-function dis_p(posts){
+//function to display posts
+function dis_p(path,batch=0,posts){
     //gotten posts
     //clear "page"
     document.querySelector("#postscontainer").innerHTML="";
+
+    let posts_div  = document.createElement("div");
+    posts_div.style.minHeight = "30rem";
+    posts_div.setAttribute("id", "posts-div");
+
+    document.querySelector("#postscontainer").appendChild(posts_div);
+    
     posts.forEach((value)=>{
     
         //post container
@@ -92,16 +62,13 @@ function dis_p(posts){
         //clicking on username loads profile page
         username.addEventListener("click",() =>{
             //get user posts
-            fetch(`posts/user/${value.user_id}/0`)
-            .then(res=>res.json())
-            .then(text=> {dis_p(text)})
+            gposts(path= `/posts/user/${value.user_id}`, batch=0);
         })
 
         //time ---------------------------------
         let time = document.createElement("span");
         time.innerHTML = value.time;
         time.classList.add("posttime");
-
 
         //text ------------------------------------
         let text = document.createElement("div");
@@ -119,15 +86,54 @@ function dis_p(posts){
         trashbutton.classList.add("heart-button")
         trashbutton.innerHTML =  "<span class='material-symbols-outlined '>delete</span>"
 
-        
         //like button event----
         likebutton.onclick = function (){
             this.classList.add("font-effect-fire")
         }
 
         postarea.append(username,time,text,likebutton, trashbutton);
-        document.querySelector("#postscontainer").appendChild(postarea);
-        
-        
+        document.querySelector("#posts-div").appendChild(postarea);
     })
+
+    //buttons ---------------------------------------------------
+    let button_div = document.createElement("div");
+    button_div.setAttribute("id","button-div")
+    button_div.style.textAlign = "center";
+
+    //next button -------------------------
+    let next_button = document.createElement("button");
+    next_button.classList.add("btn")
+    next_button.classList.add("btn-outline-secondary")
+    next_button.innerHTML = "Next";
+
+    next_button.onclick = () =>     
+    {//if batch > max_batch set it back to max_batch
+        fetch(`${path}/${batch+1}`)
+        .then(response => response.json())
+        .then(data=>{
+            let new_batch = data["batch"];
+            document.querySelector("#batch").value = new_batch;
+                gposts(path=path,batch=new_batch);    
+        })
+    }
+     //previous button -------------------
+    let prev_button = document.createElement("button");
+
+    prev_button.classList.add("btn")
+    prev_button.classList.add("btn-outline-secondary")
+    prev_button.innerHTML = "Previous";
+
+    prev_button.onclick = () => 
+     {
+         //if batch is less than 0 put it to 1 
+         fetch(`${path}/${batch-1}`)
+         .then(response => response.json())
+         .then(data=>{
+             let new_batch = data["batch"];
+             document.querySelector("#batch").value = new_batch;
+                 gposts(path=path,batch=new_batch);
+         })
+     }   
+    document.querySelector("#postscontainer").append(button_div);
+    document.querySelector("#button-div").append(prev_button,next_button);
 }

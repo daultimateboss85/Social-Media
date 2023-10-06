@@ -18,8 +18,7 @@ urlpatterns = [
     path("postpost", views.post, name="post"), #post a post
 
     path("posts/<str:category>/<int:id>/<int:batch>", views.catposts, name="catposts"), #takes care of requesting for wrong post batch
-    path("max_batch/<str:postgroup>", views.max_batch, name="maxbatch"), #get max batch of posts
-   
+
     path("userdata/<int:id>", views.userdata, name="userdata"), #getting user data ie follows, followers, name
     path("<int:post_id>/<int:user>/<str:action>", views.likes, name="likes") #liking, disliking and checking for likes on posts
     

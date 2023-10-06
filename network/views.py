@@ -73,23 +73,19 @@ def posts(request,batch):
     if batch < 0:
         batch = 0
     
-    max_batch = len(posts) // 10
+    max_batch = (len(posts)-1) // 10
 
     if batch > max_batch:
         batch = max_batch
 
     #implementing pagination by selecting batch of posts and displaying those in the batch
-    return JsonResponse([post.serialize() for post in posts[batch*10:batch*10+10]], safe=False)
+    return JsonResponse({"posts":[post.serialize() for post in posts[batch*10:batch*10+10]],
+                         "batch":batch}, safe=False)
 
 def bposts(request,anyother):
     """takes care of bad post arguments"""
     return HttpResponseRedirect(reverse("posts",args=[0]))
 
-def max_batch(request, postgroup):
-    """Returns max batch for a given postgroup #api route"""
-    if postgroup == "all":
-        return JsonResponse({"count":Post.objects.count() // 10}, safe=False)
-    
 def userdata(request, id):
     """Returns data about user with id id"""
     
@@ -117,8 +113,9 @@ def catposts(request, category, id, batch):
         followed = Follow.objects.filter(follower__id=id)
         posts = Post.objects.filter(user__id__in=[person.followed.id for person in followed]).order_by("-time")
 
-    return JsonResponse([post.serialize() for post in posts[batch*10 : batch*10 + 10]], safe=False)
-
+    #implementing pagination by selecting batch of posts and displaying those in the batch
+    return JsonResponse({"posts":[post.serialize() for post in posts[batch*10:batch*10+10]],
+                         "batch":batch}, safe=False)
 def likes(request, post_id, user, action):
     """Like a post"""
     #if user triggers like then create like with post being the post liked and user user that liked
