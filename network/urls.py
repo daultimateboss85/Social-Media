@@ -15,6 +15,8 @@ urlpatterns = [
     path("posts/<int:batch>", views.posts, name="posts"),
     path("posts/<str:anyother>", views.bposts, name="bposts"), #takes care of requesting for wrong post batch
     
+    path("postpost", views.post, name="post"), #post a post
+
     path("posts/<str:category>/<int:id>/<int:batch>", views.catposts, name="catposts"), #takes care of requesting for wrong post batch
     path("max_batch/<str:postgroup>", views.max_batch, name="maxbatch"), #get max batch of posts
    

@@ -4,9 +4,19 @@
     
 
     <!--DIV THAT DISPLAYS USER INFO-->
-    <div id="user-info">{{user.username}}</div>
+    <div style="display: none;" id="user-info">{{user.username}}</div>
 
+    <!--DIV FOR NEW POST-->
+    <div id="newpost">
+        <form id="postform" method="post">
+            {% csrf_token %}
+            <div style="width: 100%;">
+                <textarea name="" id="postdata" class="form-control" style="min-width: 30rem;"></textarea>
+                <button type="submit" class="btn btn-outline-secondary">Spit fire?</button>
+            </div>
 
+        </form>
+    </div>
     <!--DIV THAT HOLDS POSTS-->
     <div id="subbody"> 
         <div id="postscontainer"></div>

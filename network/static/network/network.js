@@ -1,6 +1,31 @@
 
 document.addEventListener("DOMContentLoaded",function(){
     gposts();
+
+    //create new post
+    document.querySelector("#postform").onsubmit = (event) => {
+  
+        event.preventDefault();
+        console.log("Is it here?");
+        fetch("/postpost", {
+            method: "POST",
+            headers:{
+                "Content-Type": "application/json"
+            },
+            
+            body:JSON.stringify({
+                text: document.querySelector("#postdata").value
+            })
+        })
+        .then(res => res.json())
+        .then(result => {
+            console.log(result);
+            gposts();
+            document.querySelector("#postdata").value = ""})
+        .catch(error => console.log(error))
+        
+        
+    }
     //next button -------------------------
     document.querySelector("#next").onclick = () => 
     {//if batch > max_batch set it back to max_batch
@@ -18,11 +43,8 @@ document.addEventListener("DOMContentLoaded",function(){
             gposts(batch=parseInt(document.querySelector("#batch").value)+1);
             document.querySelector("#batch").value = parseInt(document.querySelector("#batch").value)+1;}
         })
+
     }
-
-
-    
-
 
     //previous button -------------------
     document.querySelector("#prev").onclick = () => 
@@ -50,7 +72,6 @@ function gposts(batch=0){
         console.log(text);
     })
 }
-
 
 function dis_p(posts){
     //gotten posts

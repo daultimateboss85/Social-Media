@@ -1,8 +1,10 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Post, Follow, Likes
 
@@ -154,3 +156,13 @@ def likes(request, post_id, user, action):
             return JsonResponse({"liked":"false"},safe=False)
 
     return JsonResponse({"error":"bad request"},safe=False)
+
+@csrf_exempt
+def post(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        print(data)
+        new_post = Post(user=request.user, text=data["text"])
+        new_post.save()
+
+        return HttpResponseRedirect(reverse("posts",args=[0]))
