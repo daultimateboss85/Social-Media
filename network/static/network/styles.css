@@ -6,7 +6,7 @@ body{
 *{
     box-sizing: border-box;
 }
-
+/* Related to posts */
 .postarea{
     
     margin: 2px 0;
@@ -86,5 +86,41 @@ body{
     justify-content: center;
     align-items: center;
 
+}
+
+
+/* Related to user profile display */
+#userinfo{
+    padding-top: 2rem;
+    min-height: 15rem;
+    display: flex;
+    justify-content: center;
+
+}
+
+#iconcontainer{
+
+    width: 50%;
+    padding-right: 2rem;
+}
+
+#icon {
+    font-weight: 100;
+    font-size: 100px;
+}
+
+#namediv{
+    width: 50%;
+    margin-left: 5px;
+    font-weight: 500;
+    margin-bottom: 13px;
+    margin-right: 10rem;
+}
+
+#userprofname{
+    font-weight: 100;
+    font-size: 35px;
+    margin-bottom: 3px;
+    
 }
 

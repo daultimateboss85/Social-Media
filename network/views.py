@@ -88,7 +88,6 @@ def bposts(request,anyother):
 
 def userdata(request, id):
     """Returns data about user with id id"""
-    
     try:
         user = User.objects.get(pk=id) 
     except:
@@ -98,8 +97,7 @@ def userdata(request, id):
     followers = Follow.objects.filter(followed=user).count()
     followed = Follow.objects.filter(follower=user).count()
 
-
-    return JsonResponse({"username":user.username,"followers":followers,"followed":followed})
+    return JsonResponse({"username":user.username,"followers":followers,"followed":followed, "id":user.id})
 
 def catposts(request, category, id, batch):
     """Returns batch of specified category of posts"""
@@ -113,9 +111,18 @@ def catposts(request, category, id, batch):
         followed = Follow.objects.filter(follower__id=id)
         posts = Post.objects.filter(user__id__in=[person.followed.id for person in followed]).order_by("-time")
 
+    #make sure batch is in range
+    if batch < 0:
+        batch = 0
+    
+    max_batch = (len(posts)-1) // 10
+
+    if batch > max_batch:
+        batch = max_batch
     #implementing pagination by selecting batch of posts and displaying those in the batch
     return JsonResponse({"posts":[post.serialize() for post in posts[batch*10:batch*10+10]],
                          "batch":batch}, safe=False)
+
 def likes(request, post_id, user, action):
     """Like a post"""
     #if user triggers like then create like with post being the post liked and user user that liked
@@ -129,7 +136,6 @@ def likes(request, post_id, user, action):
     if action == "like":
         try:
             already_liked = Likes.objects.get(user=user, post=to_like)
-            
             return JsonResponse({"liked":"true"}, safe=False)
         except:
             like = Likes(user=user, post=to_like)
@@ -158,8 +164,23 @@ def likes(request, post_id, user, action):
 def post(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        print(data)
         new_post = Post(user=request.user, text=data["text"])
         new_post.save()
 
         return HttpResponseRedirect(reverse("posts",args=[0]))
+    
+def verify(request, user_id):
+    """Check if request maker is same as user with user_id"""
+    #also checks if signed in user follows user with id user_id
+    if request.user.id == user_id:
+        return JsonResponse({"same":"true"},safe=False)
+    
+
+    #check if follows
+    try:
+        follow = Follow.objects.get(follower=request.user, followed__id=user_id)
+        return JsonResponse({"same":"false", "follow":"true"},safe=False)
+    except:
+        return JsonResponse({"same":"false", "follow":"false"},safe=False)
+    
+  

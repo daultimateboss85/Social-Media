@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded",function(){
     document.querySelector("#postform").onsubmit = (event) => {
   
         event.preventDefault();
-        console.log("Is it here?");
         fetch("/postpost", {
             method: "POST",
             headers:{
@@ -19,7 +18,6 @@ document.addEventListener("DOMContentLoaded",function(){
         })
         .then(res => res.json())
         .then(result => {
-            console.log(result);
             gposts();
             document.querySelector("#postdata").value = ""})
         .catch(error => console.log(error))
@@ -61,6 +59,13 @@ function dis_p(path,batch=0,posts){
 
         //clicking on username loads profile page
         username.addEventListener("click",() =>{
+            //clear screen
+            document.querySelector("#newpost").style.display = "none";
+            
+            //get and display user data
+
+            guserdata(user=value.user_id);
+
             //get user posts
             gposts(path= `/posts/user/${value.user_id}`, batch=0);
         })
@@ -125,7 +130,6 @@ function dis_p(path,batch=0,posts){
 
     prev_button.onclick = () => 
      {
-         //if batch is less than 0 put it to 1 
          fetch(`${path}/${batch-1}`)
          .then(response => response.json())
          .then(data=>{
@@ -136,4 +140,64 @@ function dis_p(path,batch=0,posts){
      }   
     document.querySelector("#postscontainer").append(button_div);
     document.querySelector("#button-div").append(prev_button,next_button);
+}
+
+
+function guserdata (user){
+    //get and display user data
+
+    fetch(`/userdata/${user}`)
+    .then(res => res.json())
+    .then(userdata => {
+
+        //make user info div visible
+        let user_div = document.querySelector("#userinfo");
+        user_div.style.display = "flex";
+
+        let namediv = document.createElement("div");
+        namediv.setAttribute("id","namediv");
+
+        let icon = document.createElement("div");
+        icon.setAttribute("id", "iconcontainer")
+        icon.innerHTML = "<span id ='icon' class='material-symbols-outlined'>account_circle</span>"
+        icon.style.textAlign = "right";
+
+        let username = document.createElement("div");
+        username.setAttribute("id", "userprofname")
+        username.innerHTML = userdata["username"];
+
+        let follows = document.createElement("span");
+        follows.innerHTML = "Follows: " + userdata["followed"];
+
+
+        let followers = document.createElement("span");
+        followers.innerHTML = "Followers: " + userdata["followers"] + " ";
+       
+        namediv.append( username, followers, follows);
+    
+        user_div.append(icon,namediv);
+        
+        //follow/unfollow button
+        let button_div = document.createElement("div");  
+        fetch(`/verify/${userdata["id"]}`)
+        .then(res => res.json())
+        .then(result =>{
+            if (result["same"] != "true"){
+                let follow_button = document.createElement("button");
+                follow_button.setAttribute("id","followbutton");
+                follow_button.classList.add("btn","btn-outline-secondary");
+                if (result["follow"]=="true"){
+                    follow_button.innerHTML = "Unfollow";
+                }
+                else{
+                    follow_button.innerHTML = "Follow";
+                }
+                
+                document.querySelector("#iconcontainer").append(button_div);
+                button_div.append(follow_button);
+
+                
+            }
+        })
+    })
 }
