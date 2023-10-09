@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-
+from .extrahelp import chooseEditable
 from .models import User, Post, Follow, Likes
 
 
@@ -79,7 +79,12 @@ def posts(request,batch):
         batch = max_batch
 
     #implementing pagination by selecting batch of posts and displaying those in the batch
-    return JsonResponse({"posts":[post.serialize() for post in posts[batch*10:batch*10+10]],
+    posts = [post.serialize() for post in posts[batch*10:batch*10+10]]
+    
+    #choosing posts that are editable
+    posts = chooseEditable(request,posts)
+
+    return JsonResponse({"posts":posts,
                          "batch":batch}, safe=False)
 
 def bposts(request,anyother):
@@ -119,8 +124,14 @@ def catposts(request, category, id, batch):
 
     if batch > max_batch:
         batch = max_batch
+
     #implementing pagination by selecting batch of posts and displaying those in the batch
-    return JsonResponse({"posts":[post.serialize() for post in posts[batch*10:batch*10+10]],
+    posts = [post.serialize() for post in posts[batch*10:batch*10+10]]
+
+    #choosing posts that are editable
+    posts = chooseEditable(request,posts)
+
+    return JsonResponse({"posts":posts,
                          "batch":batch}, safe=False)
 
 def likes(request, post_id, user, action):
@@ -198,3 +209,16 @@ def following(request, user_id):
         return JsonResponse({"success":"user followed"},safe=False)
     
     return JsonResponse({"error":"invalid request method"}, safe=False)
+
+@csrf_exempt
+def edit(request,post_id):
+    if request.method == "POST":
+        try: 
+            post = Post.objects.get(pk=post_id)
+
+            post.text = request.POST["text"]
+            post.save()
+            return JsonResponse({"success":"post update"})
+        except:
+            return JsonResponse({"error":"post with id doesnt exist"}, safe=False)
+    return JsonResponse({"error":"post with id doesnt exist"}, safe=False)

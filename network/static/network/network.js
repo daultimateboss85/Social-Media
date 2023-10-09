@@ -78,10 +78,8 @@ function dis_p(path,batch=0,posts){
             document.querySelector("#newpost").style.display = "none";
             
             //get and display user data
-
             guserdata(user=value.user_id);
-
-            //get user posts
+            //get and display user posts
             gposts(path= `/posts/user/${value.user_id}`, batch=0);
         })
 
@@ -91,8 +89,42 @@ function dis_p(path,batch=0,posts){
         time.classList.add("posttime");
 
         //text ------------------------------------
+        let text_div = document.createElement("div");
+        console.log(value["post_id"]);
+    
+        
         let text = document.createElement("div");
+        text.setAttribute("id", `post${value["post_id"]}`)
+        text_div.append(text);
         text.innerHTML = value.text;
+      
+     
+        //editing own posts
+        if (value["editable"] == "true"){
+            text_div.addEventListener("dblclick", (event) => {
+
+                //form that replaces text -----------------------------
+                let form = document.createElement("form");
+                form.setAttribute("action", `/edit/${value["post_id"]}`)
+                form.setAttribute("method", "post");
+                let textarea = document.createElement("textarea");
+                
+                textarea.innerHTML = value.text;
+                textarea.setAttribute("name","text");
+                let submit = document.createElement("button");
+                submit.innerHTML = "Edit";
+                submit.setAttribute("type", "submit");
+                form.append(textarea, submit);
+                document.querySelector(`#post${value["post_id"]}`).replaceWith(form);
+                
+                form.onsubmit = ()=>{
+                   
+                    gposts(path=path, batch=batch);
+                    
+                    
+                }
+            } )
+        }
     
         //like button-----------------------
         let likebutton = document.createElement("button");
@@ -111,7 +143,7 @@ function dis_p(path,batch=0,posts){
             this.classList.add("font-effect-fire")
         }
 
-        postarea.append(username,time,text,likebutton, trashbutton);
+        postarea.append(username,time,text_div,likebutton, trashbutton);
         document.querySelector("#posts-div").appendChild(postarea);
     })
 
