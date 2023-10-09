@@ -104,11 +104,11 @@ def catposts(request, category, id, batch):
 
     #if posts for a specific user
     if category == "user":
-        posts = Post.objects.filter(user__id=id).order_by("-time")
+        posts = Post.objects.filter(user__id=int(id)).order_by("-time")
     
     #if posts for a feed 
     elif category == "feed":
-        followed = Follow.objects.filter(follower__id=id)
+        followed = Follow.objects.filter(follower__id=request.user.id)
         posts = Post.objects.filter(user__id__in=[person.followed.id for person in followed]).order_by("-time")
 
     #make sure batch is in range
@@ -183,4 +183,18 @@ def verify(request, user_id):
     except:
         return JsonResponse({"same":"false", "follow":"false"},safe=False)
     
-  
+@csrf_exempt
+def following(request, user_id):
+    """Follow or unfollow a user depeneding on current following status"""
+    if request.method=="POST":
+        try:
+            #unfollow if already follows
+            follow = Follow.objects.get(follower=request.user, followed__id=user_id)
+            follow.delete()
+        except:
+            #follow if not
+            follow = Follow(follower=request.user, followed=User.objects.get(pk=user_id))
+            follow.save()
+        return JsonResponse({"success":"user followed"},safe=False)
+    
+    return JsonResponse({"error":"invalid request method"}, safe=False)

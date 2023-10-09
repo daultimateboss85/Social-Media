@@ -22,7 +22,21 @@ document.addEventListener("DOMContentLoaded",function(){
             document.querySelector("#postdata").value = ""})
         .catch(error => console.log(error))
     }
+
+    //loading feed page
+    let feed = document.querySelector("#feedpage");
+    feed.addEventListener("click", ()=>{
+        clearscreen();
+
+        gposts(path=`/posts/feed/self`);
+    })
 })
+
+function clearscreen(){
+    document.querySelector("#userinfo").style.display = "none";
+    document.querySelector("#newpost").style.display = "none";
+    document.querySelector("#postscontainer").style.display = "none";
+}
 
 //function to get posts 
 function gposts(path="/posts",batch=0){
@@ -38,6 +52,7 @@ function gposts(path="/posts",batch=0){
 function dis_p(path,batch=0,posts){
     //gotten posts
     //clear "page"
+    document.querySelector("#postscontainer").style.display = "block";
     document.querySelector("#postscontainer").innerHTML="";
 
     let posts_div  = document.createElement("div");
@@ -152,6 +167,7 @@ function guserdata (user){
 
         //make user info div visible
         let user_div = document.querySelector("#userinfo");
+        user_div.innerHTML = "";
         user_div.style.display = "flex";
 
         let namediv = document.createElement("div");
@@ -182,22 +198,38 @@ function guserdata (user){
         fetch(`/verify/${userdata["id"]}`)
         .then(res => res.json())
         .then(result =>{
+            //if checking profile that is not yours show follow/ unfollow button
             if (result["same"] != "true"){
                 let follow_button = document.createElement("button");
                 follow_button.setAttribute("id","followbutton");
                 follow_button.classList.add("btn","btn-outline-secondary");
+
                 if (result["follow"]=="true"){
                     follow_button.innerHTML = "Unfollow";
                 }
                 else{
                     follow_button.innerHTML = "Follow";
                 }
-                
+               
                 document.querySelector("#iconcontainer").append(button_div);
                 button_div.append(follow_button);
+
+                follow_button.onclick = ()=>{
+                    //follow or unfollow depending on current status
+                 
+                    fetch(`/following/${userdata["id"]}`,{
+                        method:"POST"
+                    })
+                    .then(res => res.json())
+                    .then(result => {
+                        guserdata(user=userdata["id"]);
+                    })
+                   
+                }
 
                 
             }
         })
     })
 }
+

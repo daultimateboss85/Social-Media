@@ -124,3 +124,9 @@ body{
     
 }
 
+
+#followbutton{
+    width: 6rem;
+    margin-right: 5px;
+    text-align: center;
+}
