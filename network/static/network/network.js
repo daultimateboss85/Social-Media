@@ -179,9 +179,6 @@ function dis_p(path,batch=0,posts){
             }
         })
 
-
-
-
         likebutton.onclick = function (){
             fetch(`/${value["post_id"]}/like`,{
             method: "post"})
@@ -246,7 +243,6 @@ function dis_p(path,batch=0,posts){
     document.querySelector("#button-div").append(prev_button,next_button);
 }
 
-
 function guserdata (user){
     //get and display user data
 
@@ -273,7 +269,6 @@ function guserdata (user){
 
         let follows = document.createElement("span");
         follows.innerHTML = "Follows: " + userdata["followed"];
-
 
         let followers = document.createElement("span");
         followers.innerHTML = "Followers: " + userdata["followers"] + " ";
@@ -305,7 +300,6 @@ function guserdata (user){
 
                 follow_button.onclick = ()=>{
                     //follow or unfollow depending on current status
-                 
                     fetch(`/following/${userdata["id"]}`,{
                         method:"POST"
                     })
@@ -319,4 +313,3 @@ function guserdata (user){
         })
     })
 }
-
