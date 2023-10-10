@@ -134,40 +134,48 @@ def catposts(request, category, id, batch):
     return JsonResponse({"posts":posts,
                          "batch":batch}, safe=False)
 
-def likes(request, post_id, user, action):
+@csrf_exempt
+def likes(request, post_id, action):
     """Like a post"""
+    if request.method == "POST":
     #if user triggers like then create like with post being the post liked and user user that liked
-    try:
-        to_like = Post.objects.get(pk=post_id)
-        user = User.objects.get(pk=user)
-
-    except:
-        return JsonResponse({"error":"Invalid request"}, safe=False)
-    #like a post
-    if action == "like":
-        try:
-            already_liked = Likes.objects.get(user=user, post=to_like)
-            return JsonResponse({"liked":"true"}, safe=False)
-        except:
-            like = Likes(user=user, post=to_like)
-            like.save()
-            return JsonResponse({"liked":"true"},safe=False)
-
-    #dislike a post
-    elif action =="dislike":
-        try:
-            liked = Likes.objects.get(user=user, post=to_like)
-            liked.delete()
-            return JsonResponse({"liked":"false"},safe=False)
-        except:
-            return JsonResponse({"error":"no can do"}, safe=False)
         
-    elif action == "check":
         try:
-            liked = Likes.objects.get(user=user, post=to_like)
-            return JsonResponse({"liked":"true"}, safe=False)
+            to_like = Post.objects.get(pk=post_id)
+            user = request.user
+
         except:
-            return JsonResponse({"liked":"false"},safe=False)
+            return JsonResponse({"error":"Invalid request"}, safe=False)
+        #like a post
+        if action == "like":
+            try:
+                already_liked = Likes.objects.get(user=user, post=to_like)
+                already_liked.delete()
+              
+                return JsonResponse({"liked":"false","num_likes":num_likes}, safe=False)
+            except:
+                like = Likes(user=user, post=to_like)
+                like.save()
+                num_likes = Likes.objects.filter(post=to_like).count()
+                return JsonResponse({"liked":"true","num_likes":num_likes},safe=False)
+
+        #dislike a post
+        #    elif action =="dislike":
+        #       try:
+        #          liked = Likes.objects.get(user=user, post=to_like)
+        #         liked.delete()
+            #        return JsonResponse({"liked":"false"},safe=False)
+            #   except:
+            #      return JsonResponse({"error":"no can do"}, safe=False)
+        
+                
+        elif action == "check":
+            
+            try:
+                liked = Likes.objects.get(user=user, post=to_like)
+                return JsonResponse({"liked":"true"}, safe=False)
+            except:
+                return JsonResponse({"liked":"false"},safe=False)
 
     return JsonResponse({"error":"bad request"},safe=False)
 
@@ -213,9 +221,9 @@ def following(request, user_id):
 @csrf_exempt
 def edit(request,post_id):
     if request.method == "POST":
+        print(request.POST["text"])
         try: 
             post = Post.objects.get(pk=post_id)
-
             post.text = request.POST["text"]
             post.save()
             return JsonResponse({"success":"post update"})

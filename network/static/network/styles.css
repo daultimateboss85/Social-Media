@@ -18,7 +18,7 @@ body{
 }
     
 .user{
-    float: left;
+    text-align: left;
     width: 50%;
     text-align:left;
     font-size: 13px;
@@ -26,8 +26,13 @@ body{
     
 }
 
+#headerdiv{
+    display: flex;
+    background-color: #dddddd;
+}
+
 .posttime{
-    float: right;
+    
     background-color:#dddddd;
     width: 50%;
     text-align:right;
@@ -129,4 +134,21 @@ body{
     width: 6rem;
     margin-right: 5px;
     text-align: center;
+}
+
+/* editing posts */
+.replaceform{
+    margin: 5px 5px 3px 0px;
+}
+
+pre{
+    width: 100%;
+    overflow: auto;
+    margin-bottom: 3px;
+}
+
+#feed{
+    margin-left: 25%;
+    margin-top: 3rem;
+    margin-bottom: 4rem;
 }

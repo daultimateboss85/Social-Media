@@ -48,7 +48,7 @@
 
                 {% if user.is_authenticated %}
                 <span style = "position: absolute; right: 0px;">
-                    <a class="nav-link" href="#" > <strong>{{ user.username }}</strong> </a>
+                    <a class="nav-link" href="#" id="mainusername" data-id={{user.id}}> <strong>{{ user.username }}</strong> </a>
                 </span>
                 {% endif %}
                 </ul>

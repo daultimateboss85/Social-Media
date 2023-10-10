@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded",function(){
             headers:{
                 "Content-Type": "application/json"
             },
-            
             body:JSON.stringify({
                 text: document.querySelector("#postdata").value
             })
@@ -19,7 +18,8 @@ document.addEventListener("DOMContentLoaded",function(){
         .then(res => res.json())
         .then(result => {
             gposts();
-            document.querySelector("#postdata").value = ""})
+            document.querySelector("#postdata").value = ""
+        })
         .catch(error => console.log(error))
     }
 
@@ -27,8 +27,18 @@ document.addEventListener("DOMContentLoaded",function(){
     let feed = document.querySelector("#feedpage");
     feed.addEventListener("click", ()=>{
         clearscreen();
-
+        document.querySelector("#feed").style.display = "block";
         gposts(path=`/posts/feed/self`);
+    })
+
+    //clicking on username in navbar loads profile
+    let profile = document.querySelector("#mainusername");
+    profile.addEventListener("click", function(){
+        clearscreen();
+        //get and display user data
+        guserdata(this.dataset.id);
+        //get and display user posts
+        gposts(path= `/posts/user/${this.dataset.id}`, batch=0);
     })
 })
 
@@ -36,6 +46,7 @@ function clearscreen(){
     document.querySelector("#userinfo").style.display = "none";
     document.querySelector("#newpost").style.display = "none";
     document.querySelector("#postscontainer").style.display = "none";
+    document.querySelector("#feed").style.display = "none";
 }
 
 //function to get posts 
@@ -62,20 +73,23 @@ function dis_p(path,batch=0,posts){
     document.querySelector("#postscontainer").appendChild(posts_div);
     
     posts.forEach((value)=>{
-    
+
         //post container
         let postarea = document.createElement("div");
         postarea.classList.add("postarea");
          
+        //header of posts
+        let header_div = document.createElement("div");
+        header_div.setAttribute("id","headerdiv");
         //username ---------------------------------------
-        let username = document.createElement("div");
+        let username = document.createElement("span");
         username.innerHTML = value.user;
         username.classList.add("user")
 
         //clicking on username loads profile page
         username.addEventListener("click",() =>{
             //clear screen
-            document.querySelector("#newpost").style.display = "none";
+            clearscreen();
             
             //get and display user data
             guserdata(user=value.user_id);
@@ -88,18 +102,15 @@ function dis_p(path,batch=0,posts){
         time.innerHTML = value.time;
         time.classList.add("posttime");
 
+        header_div.append(username,time);
         //text ------------------------------------
         let text_div = document.createElement("div");
-        console.log(value["post_id"]);
-    
-        
         let text = document.createElement("div");
         text.setAttribute("id", `post${value["post_id"]}`)
         text_div.append(text);
-        text.innerHTML = value.text;
-      
-     
-        //editing own posts
+        text.innerHTML = "<pre>" + value.text + "</pre>";
+
+        //editing own posts-------------------------------
         if (value["editable"] == "true"){
             text_div.addEventListener("dblclick", (event) => {
 
@@ -111,18 +122,26 @@ function dis_p(path,batch=0,posts){
                 
                 textarea.innerHTML = value.text;
                 textarea.setAttribute("name","text");
+                textarea.classList.add("form-control");
+                textarea.classList.add("replaceform");
+
                 let submit = document.createElement("button");
                 submit.innerHTML = "Edit";
                 submit.setAttribute("type", "submit");
+                submit.classList.add("btn", "btn-outline-secondary");
                 form.append(textarea, submit);
                 document.querySelector(`#post${value["post_id"]}`).replaceWith(form);
                 
-                form.onsubmit = ()=>{
-                   
-                    gposts(path=path, batch=batch);
-                    
-                    
-                }
+                form.addEventListener("submit",(event) =>{
+                    event.preventDefault();
+                    fetch(form.action,{
+                        method:"POST",
+                        body: new FormData(form)
+                    })
+                    .then(res => res.json()) 
+                    .then(result => { gposts(path,batch);})
+
+                })
             } )
         }
     
@@ -131,19 +150,41 @@ function dis_p(path,batch=0,posts){
         
         likebutton.classList.add("heart-button")
         likebutton.innerHTML =  "<span class='material-symbols-outlined '>local_fire_department</span>"
-        
+        likebutton.setAttribute("id",`but${value["post_id"]}`);
         //trash button-----------------------
         let trashbutton = document.createElement("button");
-        trashbutton.setAttribute("id", "heart")
+       // trashbutton.setAttribute("id", "heart")
         trashbutton.classList.add("heart-button")
         trashbutton.innerHTML =  "<span class='material-symbols-outlined '>delete</span>"
-
+ 
         //like button event----
-        likebutton.onclick = function (){
-            this.classList.add("font-effect-fire")
-        }
+        //straight up add effect if liked
 
-        postarea.append(username,time,text_div,likebutton, trashbutton);
+        fetch(`/${value["post_id"]}/check`,
+        {method:"post"})
+        .then(res => res.json())
+        .then(result => {
+            if (result["liked"] == "true"){
+                likebutton.classList.add("font-effect-fire");
+            }
+        })
+
+        likebutton.onclick = function (){
+            fetch(`/${value["post_id"]}/like`,{
+            method: "post"})
+            .then(res => res.json())
+            .then(result => {
+                console.log(result)
+                if (result["liked"] == "true"){
+                    likebutton.classList.add("font-effect-fire");
+                }
+                else{
+                    likebutton.classList.remove("font-effect-fire");
+                }
+            })
+        } 
+
+        postarea.append(header_div,text_div,likebutton, trashbutton);
         document.querySelector("#posts-div").appendChild(postarea);
     })
 
@@ -257,9 +298,7 @@ function guserdata (user){
                         guserdata(user=userdata["id"]);
                     })
                    
-                }
-
-                
+                }  
             }
         })
     })

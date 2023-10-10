@@ -20,7 +20,7 @@ urlpatterns = [
     path("posts/<str:category>/<str:id>/<int:batch>", views.catposts, name="catposts"), #takes care of requesting for posts of specific user or posts on feed
 
     path("userdata/<int:id>", views.userdata, name="userdata"), #getting user data ie follows, followers, name
-    path("<int:post_id>/<int:user>/<str:action>", views.likes, name="likes"), #liking, disliking and checking for likes on posts
+    path("<int:post_id>/<str:action>", views.likes, name="likes"), #liking, disliking and checking for likes on posts
     
     path("verify/<int:user_id>", views.verify, name="verify"), # verify if a user is thhe same as the one to be displayed
     path("following/<int:user_id>", views.following, name="following"), #follow/ unfollow a user
