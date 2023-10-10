@@ -151,7 +151,7 @@ def likes(request, post_id, action):
             try:
                 already_liked = Likes.objects.get(user=user, post=to_like)
                 already_liked.delete()
-              
+                num_likes = Likes.objects.filter(post=to_like).count()
                 return JsonResponse({"liked":"false","num_likes":num_likes}, safe=False)
             except:
                 like = Likes(user=user, post=to_like)
@@ -170,12 +170,12 @@ def likes(request, post_id, action):
         
                 
         elif action == "check":
-            
+            num_likes = Likes.objects.filter(post=to_like).count()
             try:
                 liked = Likes.objects.get(user=user, post=to_like)
-                return JsonResponse({"liked":"true"}, safe=False)
+                return JsonResponse({"liked":"true","num_likes":num_likes}, safe=False)
             except:
-                return JsonResponse({"liked":"false"},safe=False)
+                return JsonResponse({"liked":"false", "num_likes":num_likes},safe=False)
 
     return JsonResponse({"error":"bad request"},safe=False)
 

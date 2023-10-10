@@ -146,6 +146,9 @@ function dis_p(path,batch=0,posts){
         }
     
         //like button-----------------------
+        let button_div = document.createElement("div");
+        button_div.classList.add("buttondiv");
+
         let likebutton = document.createElement("button");
         
         likebutton.classList.add("heart-button")
@@ -156,7 +159,7 @@ function dis_p(path,batch=0,posts){
        // trashbutton.setAttribute("id", "heart")
         trashbutton.classList.add("heart-button")
         trashbutton.innerHTML =  "<span class='material-symbols-outlined '>delete</span>"
- 
+
         //like button event----
         //straight up add effect if liked
 
@@ -164,27 +167,40 @@ function dis_p(path,batch=0,posts){
         {method:"post"})
         .then(res => res.json())
         .then(result => {
+            
+            //button_div.innerHTML = button_div.innerHTML + result["num_likes"];
+            let likes_span = document.createElement("span");
+            likes_span.setAttribute("id",`likes${value["post_id"]}`);
+            likes_span.innerHTML = result["num_likes"];
+
+            button_div.append(likes_span);
             if (result["liked"] == "true"){
                 likebutton.classList.add("font-effect-fire");
             }
         })
+
+
+
 
         likebutton.onclick = function (){
             fetch(`/${value["post_id"]}/like`,{
             method: "post"})
             .then(res => res.json())
             .then(result => {
-                console.log(result)
+                
+                document.querySelector(`#likes${value["post_id"]}`).innerHTML = result["num_likes"];
+                
                 if (result["liked"] == "true"){
-                    likebutton.classList.add("font-effect-fire");
+                    this.classList.add("font-effect-fire");
                 }
                 else{
-                    likebutton.classList.remove("font-effect-fire");
+                    this.classList.remove("font-effect-fire");
                 }
             })
         } 
 
-        postarea.append(header_div,text_div,likebutton, trashbutton);
+        button_div.append(likebutton)
+        postarea.append(header_div,text_div,button_div);
         document.querySelector("#posts-div").appendChild(postarea);
     })
 

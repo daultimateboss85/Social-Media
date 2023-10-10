@@ -64,13 +64,12 @@ body{
 
 .heart-button{
     border-style: none;
-    padding-left: 0;
+    padding-top: 5px;
+    padding-left: 3px;
+    padding-right: 0;
     color: grey;
     background-color: #eeeeee0f;
-}
-
-.heart{
-    color:red;
+    text-align: right;
 }
 
 .material-symbols-outlined{
@@ -93,7 +92,10 @@ body{
 
 }
 
-
+.buttondiv{
+    display: flex;
+    align-items: center;
+}
 /* Related to user profile display */
 #userinfo{
     padding-top: 2rem;
