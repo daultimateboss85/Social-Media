@@ -183,10 +183,13 @@ def likes(request, post_id, action):
 def post(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        new_post = Post(user=request.user, text=data["text"])
-        new_post.save()
-
-        return HttpResponseRedirect(reverse("posts",args=[0]))
+        if request.user.is_authenticated:
+            new_post = Post(user=request.user, text=data["text"])
+            new_post.save()
+            return HttpResponseRedirect(reverse("posts",args=[0]))
+        
+        else:
+             return JsonResponse({"error":"user not signed in"}, safe=False)
     
 def verify(request, user_id):
     """Check if request maker is same as user with user_id"""
